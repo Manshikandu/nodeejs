@@ -1,6 +1,6 @@
 //console.log('first nodesjs project');
 
-import { error } from 'console';
+//import { error } from 'console';
 import * as express from 'express';
 import { resolve } from 'path';
 
@@ -10,6 +10,21 @@ app.listen(3000,() => {
     console.log("server is running at 3000");
 });
 
+app.get('/api/user/login',(req,res) =>{
+    console.log(req.query);
+    //const data = {name: 'tech',email: 'tach@gmail.com'}
+    //res.status(200).send(data);
+    res.send('success')
+    })
+
+    app.get('/api/user/test',(req,res) =>{
+       // console.log(req);
+        //const data = {name: 'tech',email: 'tach@gmail.com'}
+        //res.status(200).send(data);
+        res.send('test')
+        })
+
+//app.patch('/api/user/password')
 // function is_MathsByX_Available() {
 //     return false;
 // }
@@ -82,12 +97,14 @@ app.listen(3000,() => {
 //     console.log(e);       //using this data will be show in catch one
 // })
 
+//PROMISE OPERATOR
 
-const object1 = { id: 1, name: 'tech'};
-const object2 = {...object1,email: 'mani@gmail.com'};
-console.log(object2);
 
-const array1 = [1,2,3];
-const array2 =  [2,3,4];
-const array3 = [...array1,...array2]
-console.log(array3);
+// const object1 = { id: 1, name: 'tech'};
+// const object2 = {...object1,email: 'mani@gmail.com'};
+// console.log(object2);
+
+// const array1 = [1,2,3];
+// const array2 =  [2,3,4];
+// const array3 = [...array1,...array2]
+// console.log(array3);
