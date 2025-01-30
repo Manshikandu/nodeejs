@@ -1,38 +1,23 @@
 //console.log('first nodesjs project');
 
-//import { error } from 'console';
-import * as express from 'express';
-import * as mongoose from 'mongoose';
-import { resolve } from 'path';
-import { getEnvironmentVariables } from './env/environment';
+//import { error } from 'cosole';
 
-let app:express.Application = express();
+//import { Server } from './server';
+import { Server } from './server';
+let server = new Server().app;
+let port = 3000;
 
-app.listen(3000,() => {
-    console.log("server is running at 3000");
+//let app:express.Application = express();
+
+server.listen(port,() => {
+    console.log(`Server is running at port ${port}`);
 });
 // app.use((req,res,next) => {
 // console.log('middleware');
 // next();
 // })
-mongoose.connect(getEnvironmentVariables().db_uri)
-.then(() =>{
-    console.log('Connected to the db')
-})
 
-// app.get('/api/user/login',(req,res) =>{
-//     console.log(req.query);
-//     //const data = {name: 'tech',email: 'tach@gmail.com'}
-//     //res.status(200).send(data);
-//     res.send('success')
-//     })
 
-//     app.get('/api/user/test',(req,res) =>{
-//        // console.log(req);
-//         //const data = {name: 'tech',email: 'tach@gmail.com'}
-//         //res.status(200).send(data);
-//         res.send('test')
-//         })
 
 // //app.patch('/api/user/password')
 // // function is_MathsByX_Available() {
