@@ -38,7 +38,7 @@ export class UserValidators {
                             req.user = user;
                             return true;
                            }else{
-                            throw("user doesn't exist");
+                            throw("No user register withthis password");
                            }
                     }).catch( e => {
                         throw new Error(e)
