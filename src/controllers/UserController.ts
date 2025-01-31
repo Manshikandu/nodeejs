@@ -1,45 +1,89 @@
 import User from "../models/User";
-import {  validationResult } from 'express-validator'
+
+import * as jwt from 'jsonwebtoken'
+import { Utlis } from "../utlis/Utlis";
+import { resolve } from "path";
+import { getEnvironmentVariables } from "../env/environment";
 export class UserController {
+ 
  static  async signup(req,res,next) {
-    // console.log(req.query);
-    // const data = {name: 'tech',email: 'tach@gmail.com'}
-    // res.status(200).send(data);
-    // (req as any).errorStatus = 422;
-    // const error = new Error('user email or password doen;t match');
-    // next(error);
-    //res.send(req.query)
-    //res.send(req.body)
-    const errors = validationResult(req);
     const name = req.body.name;
     const phone = req.body.phone;
-    const email = req.body.email;
     const password = req.body.password;
+    const email = req.body.email;
     const type = req.body.type;
     const status = req.body.status;
-    if(!errors.isEmpty()){
-        next( new Error(errors.array()[0].msg));
-        //return res.status(400).json({ errors: errors.array().map(x => x.msg)});
-    }
+    const verification_token = Utlis.generateVerificationToken();
 
-    //res.send('Signup succesfull')
+    try{
+    const hash = await Utlis.encryptPassword(password);
+
     const data = {
         email,
+        verification_token,
+        verification_token_time: Date.now() + new Utlis().MAX_TOKEN_TIME,
         phone,
-        password,
+        password: hash,
         name,
         type,
         status,
     }
-    try {
         let user =  await new User(data).save();
+        const payload = {
+            user_id : user._id,
+            email: user.email
+        };
+        const token = jwt.sign(
+            payload,
+            getEnvironmentVariables().jwt_secret_key,
+            { expiresIn : '180d'}
+        );
+        res.json({
+            token: token,
+            user: user,
+        })
+        //send email to user for verification
         res.send(user);
-    } catch (e) {
+}catch (e) {
         next(e);
     }
     
 
  }
+ static async verify(req,res,next) {
+    const  verification_token = req.body.verification_token;
+    const email = req.body.email;
+    try {
+        const user = await User.findOneAndUpdate({
+            email : email,
+            verification_token: verification_token,
+            verification_token_time: {$gt: Date.now()},
+
+        },
+    {
+      email_verified: true  
+    },
+    {
+        new: true
+    }
+    );
+
+        if(user){
+        res.send(user);
+        //update & send response
+        }else{
+            throw new Error('Email verification token is expired. please try again')
+        }
+    } catch (e) {
+        next(e);
+    }
+    
+    
+}
+
+static async login(req,res,next){
+    res.send(req.user);
+}
 
 }
 
