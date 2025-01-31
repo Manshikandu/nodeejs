@@ -4,7 +4,8 @@ import { resolve } from 'path';
 import { getEnvironmentVariables } from './env/environment';
 import UserRouter from './routers/UserRouter';
 import * as bodyParser from 'body-parser';
-import { STATUS_CODES } from 'http';
+import * as cors from 'cors';
+
 
 
 export class Server {
@@ -19,7 +20,9 @@ export class Server {
 
     setConfigs() {
     this.connectMongoDB();
+    this.allowCors();
     this.configureBodyParser();
+    
     }
     connectMongoDB() {
     mongoose.connect(getEnvironmentVariables().db_uri)
@@ -34,6 +37,9 @@ this.app.use(bodyParser.urlencoded({
     extended: true
 }))
     }
+allowCors(){
+    this.app.use(cors());
+}
     setRoutes() {
     this.app.use('/api/user',UserRouter);
     }
