@@ -1,9 +1,6 @@
 import User from "../models/User";
-
-import * as jwt from 'jsonwebtoken'
 import { Utlis } from "../utlis/Utlis";
-import { resolve } from "path";
-import { getEnvironmentVariables } from "../env/environment";
+
 export class UserController {
  
  static  async signup(req,res,next) {
@@ -33,11 +30,7 @@ export class UserController {
             user_id : user._id,
             email: user.email
         };
-        const token = jwt.sign(
-            payload,
-            getEnvironmentVariables().jwt_secret_key,
-            { expiresIn : '180d'}
-        );
+        const token = Utlis.jwtsign(payload);
         res.json({
             token: token,
             user: user,
@@ -82,8 +75,31 @@ export class UserController {
 }
 
 static async login(req,res,next){
-    res.send(req.user);
+    const user = req.user;
+    const password = req.query.password;
+    const data = {
+        password,
+        encrypt_password: user.password
+    };
+    
+    try{
+       await Utlis.comparePassword(data);
+       
+       const payload = {
+           user_id : user._id,
+           email: user.email
+       };
+       const token = Utlis.jwtsign(payload);
+       res.json({
+           token: token,
+           user: user,
+       })
+    }catch(e){
+      next(e);
+    }
 }
+
+
 
 }
 
